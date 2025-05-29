@@ -11,6 +11,8 @@ class Restaurant extends Model
 
     protected $fillable = ['name', 'slug', 'domain', 'logo'];
 
+    protected $appends = ['logo_url'];
+
     public function users()
     {
         return $this->belongsToMany(User::class);
@@ -20,4 +22,14 @@ class Restaurant extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function getLogoUrlAttribute()
+    {
+        return $this->logo ? asset('storage/' . $this->logo) : null;
+    }
+
+    // public function scopeActive($query)
+    // {
+    //     return $query->where('status', 'active');
+    // }
 }
