@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Customer\ProductController; 
 use App\Http\Controllers\Api\Customer\RestaurantController;
+use App\Http\Controllers\Api\Customer\OrderController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -22,3 +23,5 @@ Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+
+Route::post('/orders', [OrderController::class, 'store']);
