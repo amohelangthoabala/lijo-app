@@ -13,14 +13,21 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable(); // Guest name (optional)
-            $table->string('phone')->nullable(); // Contact info
-            $table->string('email')->nullable(); // Optional
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                
+                // Order type: pickup or delivery
+            $table->enum('type', ['pickup', 'delivery'])->default('delivery');
+            
+            // Delivery address only required for delivery
             $table->text('delivery_address')->nullable();
 
+            // Cost-related fields
+            $table->decimal('delivery_cost', 10, 2)->default(0.00);
+            $table->decimal('total', 10, 2)->default(0.00);
+            
+            // Order status tracking
             $table->enum('status', ['pending', 'accepted', 'preparing', 'delivering', 'delivered'])->default('pending');
 
-            $table->decimal('total', 10, 2)->default(0.00);
             $table->timestamps();
         });
     }
