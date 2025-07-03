@@ -57,8 +57,18 @@ class OrderResource extends Resource
                     ->default(null),
                 Forms\Components\Textarea::make('delivery_address')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('status')
-                    ->required(),
+                
+                Forms\Components\Select::make('status')
+                    ->required()
+                    ->options([
+                        'pending' => 'Pending',
+                        'preparing' => 'Preparing',
+                        'out_for_delivery' => 'Out for Delivery',
+                        'delivered' => 'Delivered',
+                        'cancelled' => 'Cancelled',
+                    ])
+                    ->native(false), // optional for dropdown style
+
                 Forms\Components\TextInput::make('total')
                     ->required()
                     ->numeric()
