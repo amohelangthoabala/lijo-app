@@ -1,5 +1,5 @@
 <?php
-namespace App\Filament\Resources\OrderResource\RelationManagers;
+namespace App\Filament\Resources\OrderItemsResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;

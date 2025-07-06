@@ -23,6 +23,11 @@ class Restaurant extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Product::class);
+    }
+
     public function getLogoUrlAttribute()
     {
         return $this->logo ? asset('storage/' . $this->logo) : null;

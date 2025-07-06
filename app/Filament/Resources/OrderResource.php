@@ -13,7 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
-use App\Filament\Resources\OrderResource\RelationManagers\ItemsRelationManager;
+use App\Filament\Resources\OrderItemsResource\RelationManagers\ItemsRelationManager;
 
 
 
@@ -26,6 +26,7 @@ class OrderResource extends Resource
            // protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static ?string $navigationGroup = 'Management';
 
+
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
@@ -34,11 +35,9 @@ class OrderResource extends Resource
             return parent::getEloquentQuery();
         }
 
-        // Restrict orders to only ones that include products from this user’s restaurants
-        return parent::getEloquentQuery()->whereHas('items.product.restaurant.users', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        });
+        return parent::getEloquentQuery()->whereIn('restaurant_id', $user->restaurants->pluck('id'));
     }
+
 
     public static function form(Form $form): Form
     {
@@ -55,6 +54,21 @@ class OrderResource extends Resource
                     ->email()
                     ->maxLength(255)
                     ->default(null),
+                Forms\Components\Select::make('restaurant_id')
+                    ->label('Restaurant')
+                    ->required()
+                    ->options(function () {
+                        $user = auth()->user();
+
+                        if ($user->hasRole('admin')) {
+                            return \App\Models\Restaurant::pluck('name', 'id');
+                        }
+
+                        return $user->restaurants->pluck('name', 'id');
+                    })
+                    ->searchable()
+                    ->preload(),
+
                 Forms\Components\Textarea::make('delivery_address')
                     ->columnSpanFull(),
                 

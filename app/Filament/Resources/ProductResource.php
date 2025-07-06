@@ -97,7 +97,7 @@ class ProductResource extends Resource
 
                     TextInput::make('price')
                         ->numeric()
-                        ->label('Override Price'),
+                        ->label('Additional Cost'),
                 ])
                 ->columns(2)
                 ->defaultItems(0)

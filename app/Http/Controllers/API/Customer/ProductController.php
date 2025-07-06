@@ -15,4 +15,11 @@ class ProductController extends Controller
 
         return ProductResource::collection($products);
     }
+
+    public function show($id)
+    {
+        $product = Product::with(['restaurant', 'images', 'variants'])->findOrFail($id);
+
+        return new ProductResource($product);
+    }
 }

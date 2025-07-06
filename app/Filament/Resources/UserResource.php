@@ -25,18 +25,44 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+
+        if ($user->hasRole('admin')) {
+            return parent::getEloquentQuery();
+        }
+
+        // Non-admin: only see users who belong to the same restaurant(s)
+        return parent::getEloquentQuery()
+            ->whereHas('restaurants', function ($query) use ($user) {
+                $query->whereIn('restaurants.id', $user->restaurants->pluck('id'));
+            });
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')->required(),
-                TextInput::make('email')->email()->required()->unique(ignoreRecord: true),
+                TextInput::make('phone')
+                    ->tel()
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->label('Phone Number'),
+                TextInput::make('email')
+                    ->email()
+                    ->nullable()
+                    ->unique(ignoreRecord: true)
+                    ->label('Email Address'),
 
                 TextInput::make('password')
                     ->password()
                     ->required(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
-                    ->dehydrateStateUsing(fn ($state) => \Hash::make($state))
-                    ->label('Password'),
+                    ->dehydrateStateUsing(fn ($state) => $state ? \Hash::make($state) : null)
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->label('Password')
+                    ->helperText('Leave empty to keep current password.'),
 
                 MultiSelect::make('restaurants')
                     ->relationship('restaurants', 'name')
@@ -44,9 +70,8 @@ class UserResource extends Resource
                     ->preload()
                     ->searchable(),
 
-                Select::make('roles')
-                    ->label('Role')
-                    ->multiple()
+                MultiSelect::make('roles')
+                    ->label('Roles')
                     ->relationship('roles', 'name')
                     ->preload()
                     ->required(),
