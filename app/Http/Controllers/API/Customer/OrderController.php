@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Customer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Http\Resources\OrderResource;
 
 class OrderController extends Controller
 {
@@ -18,6 +19,13 @@ class OrderController extends Controller
         return response()->json([
             'orders' => $orders,
         ]);
+    }
+
+    public function show($id)
+    {
+        $order = Order::with(['items.product'])->findOrFail($id);
+
+        return new OrderResource($order);
     }
 
     public function store(Request $request)

@@ -1,12 +1,14 @@
 <?php
+
 namespace App\Events;
 
 use App\Models\Order;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+//use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Queue\SerializesModels;
 
-class OrderStatusUpdated implements ShouldBroadcast
+class OrderStatusUpdated implements ShouldBroadcastNow
 {
     use SerializesModels;
 
@@ -19,7 +21,7 @@ class OrderStatusUpdated implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new Channel('orders'); // Make sure this matches echo.channel('orders')
+        return new Channel('orders'); // Use PrivateChannel if needed for security
     }
 
     public function broadcastWith()

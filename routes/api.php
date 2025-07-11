@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Customer\ProductController;
 use App\Http\Controllers\Api\Customer\RestaurantController;
 use App\Http\Controllers\Api\Customer\OrderController;
+use App\Events\OrderStatusUpdated;
+use App\Models\Order;
 
 // 👤 Auth routes
 Route::prefix('auth')->group(function () {
@@ -33,4 +35,11 @@ Route::prefix('products')->group(function () {
 Route::middleware('auth:sanctum')->prefix('orders')->group(function () {
     Route::post('/', [OrderController::class, 'store']);
     Route::get('/', [OrderController::class, 'index']);
+    Route::get('/{id}', [OrderController::class, 'show']);
+});
+
+Route::get('/test-broadcast', function () {
+    $order = Order::first(); // Make sure an order exists
+    broadcast(new OrderStatusUpdated($order));
+    return 'Event Broadcasted!';
 });
